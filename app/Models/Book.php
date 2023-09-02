@@ -42,4 +42,30 @@ class Book extends Model
         }
     }
 
+    public function scopePopularLastMonth(Builder $query) : Builder{
+        return $query->popular(now()->subMonth(), now())
+        ->highestRated(now()->subMonth(), now())
+        ->minimumReviews(2);
+    }
+
+    public function scopePopularLast6Month(Builder $query) : Builder{
+        return $query->popular(now()->subMonths(6), now())
+        ->highestRated(now()->subMonths(6), now())
+        ->minimumReviews(5);
+    }
+
+    public function scopeHighestRatedLastMonth(Builder $query) : Builder{
+        return $query->highestRated(now()->subMonth(), now())->
+        popular(now()->subMonth(), now())
+        ->minimumReviews(2);
+    }
+
+
+    public function scopeHighestRatedLast6Month(Builder $query) : Builder{
+        return $query->highestRated(now()->subMonths(6), now())->
+        popular(now()->subMonths(6), now())
+        ->minimumReviews(5);
+    }
+
+
 }
