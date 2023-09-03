@@ -9,12 +9,22 @@
       <div class="book-rating flex items-center">
         <div class="mr-2 text-sm font-medium text-slate-700">
           {{ number_format($book->reviews_avg_rating, 1) }}
+
         </div>
+
+        <x-review-rating :rating='$book->reviews_avg_rating'/>
+
         <span class="book-review-count text-sm text-gray-500">
-          {{ $book->reviews_count }} {{ Str::plural('review', 5) }}
+            {{ $book->reviews_count }} {{ Str::plural('review', $book->review_count) }}
         </span>
       </div>
     </div>
+  </div>
+
+  <div class="mb-4">
+    <a href="{{route('books.reviews.create', $book)}}" class="reset-link">
+        Add a review
+    </a>
   </div>
 
   <div>
@@ -24,7 +34,7 @@
         <li class="book-item mb-4">
           <div>
             <div class="mb-2 flex items-center justify-between">
-              <div class="font-semibold">{{ $review->rating }}</div>
+              <div class="font-semibold"><x-review-rating :rating='$review->rating'/></div>
               <div class="book-review-count">
                 {{ $review->created_at->format('M j, Y') }}</div>
             </div>

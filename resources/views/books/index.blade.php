@@ -8,7 +8,7 @@
         <button type="submit" class="btn h-10">Search</button>
         <a href="{{route('books.index')}}" class="btn">Clear</a>
     </form>
-    
+
     <div class="filter-container mb-4 flex">
         @php
           $filters = [
@@ -40,7 +40,7 @@
                 </div>
                 <div>
                   <div class="book-rating">
-                    {{number_format($book->reviews_avg_rating, 1)}}
+                    <x-review-rating :rating='$book->reviews_avg_rating'/>
                   </div>
                   <div class="book-review-count">
                     out of {{$book->reviews_count}} {{Str::plural('reviews', $book->reviews_count)}}

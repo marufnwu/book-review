@@ -18,13 +18,23 @@ class Book extends Model
         return $query->where('title', 'LIKE', "%{$title}%");
     }
 
+    public function scopeWithReviewCount(Builder $query, $from = null, $to = null) : Builder {
+        return $query->withCount([
+            'reviews' => fn() => $this->dateFilter($query, $from, $to)
+        ]);
+    }
+
     public function scopePopular(Builder $query, $from = null, $to = null): Builder{
-        return $query->withCount(['reviews' => fn() => $this->dateFilter($query, $from, $to)]
-        )->orderBy('reviews_count', 'desc');
+        return $query->withReviewCount()
+        ->orderBy('reviews_count', 'desc');
+    }
+
+    public function scopeWithAverageRating( $query, $from = null, $to = null) : Builder{
+        return $query->withAvg(["reviews"=>fn()=>$this->dateFilter($query, $from, $to)], "rating");
     }
 
     public function scopeHighestRated(Builder $query, $from = null, $to = null) : Builder {
-        return $query->withAvg(["reviews"=>fn()=>$this->dateFilter($query, $from, $to)],"rating")
+        return $query->withAverageRating()
         ->orderBy('reviews_avg_rating', 'desc');
     }
 

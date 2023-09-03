@@ -14,13 +14,6 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = [
-            '' => 'Latest',
-            'popular_last_month' => 'Popular Last Month',
-            'popular_last_6months' => 'Popular Last 6 Months',
-            'highest_rated_last_month' => 'Highest Rated Last Month',
-            'highest_rated_last_6months' => 'Highest Rated Last 6 Months',
-        ];
 
         $title = $request->input("title");
         $filter = $request->input("filter");
@@ -40,7 +33,7 @@ class BookController extends Controller
             "popular_last_6months" => $books->popularLast6Month(),
             "highest_rated_last_month" => $books->highestRatedLastMonth(),
             "highest_rated_last_6months" => $books->highestRatedLast6Month(),
-            default => $books->latest()
+            default => $books->latest()->withAverageRating()->withReviewCount()
         };
 
         //$books = $books->get(); //using cache
@@ -74,15 +67,14 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Book $book)
+    public function show(int $id)
     {
+        $cacheKey = "book:".$id;
 
-        $cacheKey = "book:".$book->id;
 
-
-        $book = Cache::remember($cacheKey, 3600, fn()=>$book->load([
+        $book = Cache::remember($cacheKey, 3600, fn()=>Book::with([
             'reviews'=> fn($query) => $query->latest()
-            ]));
+            ])->withAverageRating()->findOrFail($id));
 
         return view('books.show', ['book'=>$book]);
     }
